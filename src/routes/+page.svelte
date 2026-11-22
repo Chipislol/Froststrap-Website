@@ -139,6 +139,18 @@
 		}
 	});
 
+	const installCommand = $derived.by(() => {
+		switch (platform) {
+			case 'windows':
+				return 'winget install Froststrap.Froststrap';
+			case 'macos-arm64':
+			case 'macos-x64':
+				return 'brew install --cask froststrap/tap/froststrap';
+			default:
+				return null;
+		}
+	});
+
 	const downloadColumns = $derived.by(() => {
 		const url = (pattern: RegExp) =>
 			release?.assets.find((candidate) => pattern.test(candidate.name))?.browser_download_url ??
@@ -159,7 +171,8 @@
 				icon: AppleIcon,
 				links: [
 					{ label: '.pkg · Apple Silicon', href: url(/macos-arm64-Setup\.pkg$/i) },
-					{ label: '.pkg · Intel', href: url(/macos-x64-Setup\.pkg$/i) }
+					{ label: '.pkg · Intel', href: url(/macos-x64-Setup\.pkg$/i) },
+					{ label: 'Homebrew', command: 'brew install --cask froststrap/tap/froststrap' }
 				]
 			},
 			{
@@ -280,13 +293,12 @@
 				{/if}
 			</p>
 
-			{#if platform === 'windows'}
+			{#if installCommand}
 				<div class="mt-8 lg:max-w-[36rem]">
 					<p class="mb-1.5 text-small text-muted-foreground transition-colors">Or install with:</p>
 					<pre
 						class="overflow-x-auto rounded-md border border-border bg-surface px-3 py-3 text-left sm:px-4 sm:py-3.5"><code
-							class="font-mono text-small text-foreground transition-colors"
-							>winget install Froststrap.Froststrap</code
+							class="font-mono text-small text-foreground transition-colors">{installCommand}</code
 						></pre>
 				</div>
 			{/if}
